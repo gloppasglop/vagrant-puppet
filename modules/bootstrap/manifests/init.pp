@@ -9,9 +9,7 @@ class bootstrap::params {
   }
 }
 
-class bootstrap::config (
-   $puppetmaster = 'puppet.local',
-   $gitrepo
+class bootstrap::setup (
 ) inherits bootstrap::params {
 
   file {'/etc/r10k.yaml':
@@ -39,15 +37,30 @@ class bootstrap::config (
     ensure    => directory,
     owner     => root,
     group     => root,
-  } ->
+  } 
+
   file {'/etc/puppet/hiera/common.yaml':
     ensure    => file,
     content   => template('bootstrap/common.yaml.erb'),
     owner     => root,
     group     => root,
+    require   => File['/etc/puppet/hiera'],
   }
 
-  
+  file {"/etc/puppet/hiera/nodes/$puppetmaster.yaml":
+    ensure     => file,
+    content    => template('bootstrap/puppetmaster.yaml.erb'),
+    owner      => root, 
+    group      => root,
+    require   => File['/etc/puppet/hiera/nodes'],
+  }
+
+  exec {'r10k_deploy':
+    command     => 'r10k deploy environment -p --verbose',
+    path => ['/bin','/sbin','/usr/bin','/usr/sbin','/usr/local/bin'] ,
+#    path        => ['/usr/bin','/usr/local/bin'],
+    require     => File['/etc/r10k.yaml']
+  }
 
 }
 
@@ -73,12 +86,13 @@ class bootstrap::install inherits bootstrap::params {
     require => Package ['rubygems'],
   }
 
+
 }
 
 class bootstrap {
   include '::bootstrap::install'
-  include '::bootstrap::config'
+  include '::bootstrap::setup'
 
-  Class['::bootstrap::install'] -> Class['::bootstrap::config']
+  Class['::bootstrap::install'] -> Class['::bootstrap::setup']
 }
 

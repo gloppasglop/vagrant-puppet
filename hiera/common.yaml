@@ -1,2 +1,2 @@
-bootstrap::config::puppetmaster: %{::fqdn}
-bootstrap::config::gitrepo: https://github.com/gloppasglop/expertday-demo.git
+#bootstrap::config::puppetmaster: %{::fqdn}
+#bootstrap::config::gitrepo: https://github.com/gloppasglop/expertday-demo.git
