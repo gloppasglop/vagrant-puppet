@@ -1,0 +1,4 @@
+puppet::agent::server: <%= @puppetmaster %>
+puppet::server::dns_alt_names: <%= @puppetmaster %>
+puppetdb::ssl_listen_address: 0.0.0.0 
+puppetdb::master::config::puppetdb_server: <%= @puppetmaster %>
